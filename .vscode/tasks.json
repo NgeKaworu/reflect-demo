@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "type": "shell",
+  "echoCommand": true,
+  "cwd": "${workspaceFolder}",
+  "options": {
+    "env": {
+      "GOPATH": "${workspaceFolder}"
+    }
+  },
+  "tasks": [
+    {
+      "label": "buildgo",
+      "command": "export GOPATH='${workspaceFolder}' && export GOBIN=$GOPATH/bin && go clean && go get -d && go build -o '${workspaceFolder}/bin'",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$go"]
+    }
+  ]
+}
