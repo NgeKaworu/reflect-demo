@@ -65,6 +65,7 @@ func main() {
 	ret.ID = ret.ID.(primitive.ObjectID).Hex()
 
 	fmt.Println(err, ret, res)
+	fmt.Printf("%T %#v", ret, ret)
 }
 
 type DbEngine struct {
