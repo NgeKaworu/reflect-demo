@@ -18,20 +18,8 @@ import (
 
 // Test 测试id
 type Test struct {
-	ID   *primitive.ObjectID `bson:"_id, omitempty"`
-	Name *string             `bson:"name, omitempty"`
-}
-
-type Person struct {
-	IdFiled        primitive.ObjectID `json:"id" bson:"_id,omitempty" jsonschema:"-"`
-	CreatedAtFiled time.Time          `json:"createdat,omitempty" bson:"createdat,omitempty"`
-	Name           string             `json:"name,omitempty" bson:"name,omitempty" jsonschema:"required,minLength=2,maxLength=64"`
-	Role           string             `json:"role,omitempty" bson:"role,omitempty" jsonschema:"enum=ADMIN|USER"`
-	Address        *[]string          `json:"address,omitempty" bson:"address,omitempty" jsonschema:"-"`
-	Email          string             `json:"email,omitempty" bson:"email,omitempty" jsonschema:"required,minLength=2,maxLength=64"`
-	Phone          string             `json:"phone,omitempty" bson:"phone,omitempty" jsonschema:"required,minLength=2,maxLength=64"`
-	Total          *float64           `json:"total,omitempty" bson:"total,omitempty"`
-	Order          *int32             `json:"order,omitempty" bson:"order,omitempty"`
+	ID   interface{} `bson:"_id, omitempty"`
+	Name *string     `bson:"name, omitempty"`
 }
 
 func main() {
@@ -47,27 +35,36 @@ func main() {
 	err := eng.Open(*mongo, *db)
 	defer eng.Close()
 
-	c := eng.GetColl("t_persons")
+	c := eng.GetColl("t_test")
 
-	re, err := c.Find(ctx, bson.M{})
+	// s := "23333"
+	id := "5e2400e9123bb7a386d2f18b"
 
-	objs := []*Person{}
-	_ = re.All(ctx, &objs)
+	// o := Test{
+	// 	// Name: &s,
+	// 	ID: &id,
+	// }
 
-	fmt.Println(objs)
+	// o.ID, _ = primitive.ObjectIDFromHex(*o.ID.(*string))
 
-	s := "233"
-	data, err := bson.Marshal(&Test{
-		Name: &s,
-	})
+	// data, err := bson.Marshal(o)
+
+	// r, err := c.InsertOne(ctx, data)
+
+	// println(r, err)
 
 	var ret Test
 
-	if err := bson.Unmarshal(data, &ret); err != nil {
-		fmt.Println(err)
-	}
+	iid, _ := primitive.ObjectIDFromHex(id)
+	res := c.FindOne(ctx, bson.M{
+		"_id": iid,
+	})
 
-	fmt.Println(data, err, ret)
+	res.Decode(&ret)
+
+	ret.ID = ret.ID.(primitive.ObjectID).Hex()
+
+	fmt.Println(err, ret, res)
 }
 
 type DbEngine struct {
