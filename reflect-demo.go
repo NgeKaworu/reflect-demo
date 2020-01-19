@@ -22,17 +22,39 @@ type Test struct {
 	Name *string             `bson:"name, omitempty"`
 }
 
+type Person struct {
+	IdFiled        primitive.ObjectID `json:"id" bson:"_id,omitempty" jsonschema:"-"`
+	CreatedAtFiled time.Time          `json:"createdat,omitempty" bson:"createdat,omitempty"`
+	Name           string             `json:"name,omitempty" bson:"name,omitempty" jsonschema:"required,minLength=2,maxLength=64"`
+	Role           string             `json:"role,omitempty" bson:"role,omitempty" jsonschema:"enum=ADMIN|USER"`
+	Address        *[]string          `json:"address,omitempty" bson:"address,omitempty" jsonschema:"-"`
+	Email          string             `json:"email,omitempty" bson:"email,omitempty" jsonschema:"required,minLength=2,maxLength=64"`
+	Phone          string             `json:"phone,omitempty" bson:"phone,omitempty" jsonschema:"required,minLength=2,maxLength=64"`
+	Total          *float64           `json:"total,omitempty" bson:"total,omitempty"`
+	Order          *int32             `json:"order,omitempty" bson:"order,omitempty"`
+}
+
 func main() {
-	const (
+	var (
 		mongo = flag.String("m", "mongodb://root:root@192.168.101.68:27017,192.168.101.69:27017,192.168.101.70:27017/?authSource=admin&replicaSet=rs1", "mongod addr flag")
 		//mongo = flag.String("m", "", "mongod addr flag")
 		db = flag.String("db", "solitaire_way", "mongod addr flag")
 	)
 	flag.Parse()
+	ctx := context.Background()
 
 	eng := NewDbEngine()
 	err := eng.Open(*mongo, *db)
 	defer eng.Close()
+
+	c := eng.GetColl("t_persons")
+
+	re, err := c.Find(ctx, bson.M{})
+
+	objs := []*Person{}
+	_ = re.All(ctx, &objs)
+
+	fmt.Println(objs)
 
 	s := "233"
 	data, err := bson.Marshal(&Test{
