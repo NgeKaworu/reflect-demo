@@ -9,7 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "${workspaceFolder}/${workspaceFolderBasename}"
+      "program": "${workspaceFolder}/${workspaceFolderBasename}.go"
     },
     {
       "name": "Launch",
